@@ -46,9 +46,20 @@ public:
         
         return true;
     }
+    
+    vector<int> GetParents() {
+        vector<int> updated_parents(parent.size());
+        for(int k = 0; k < parent.size(); k++) {
+            updated_parents[k] = find(k);
+        }
+        
+        return updated_parents;
+    }
 };
 
-pair<int, int> GetGroupCount(vector<int>& uf_arr);
+// fix3: GetGroupCount에서 GetGroupSizes로 변경
+// Group의 개수를 구하는 것이 아니라 Group의 요소들의 개수들을 구하는 것이므로 sizes가 더 명확하다.
+vector<int> GetGroupSizes(const vector<int>& uf_arr);
 
 // 정점 인덱스는 1-base이므로 0-base로 매칭해줘야 한다.
 int solution(int n, vector<vector<int>> wires) {
@@ -64,28 +75,30 @@ int solution(int n, vector<vector<int>> wires) {
             uf.unite(v1, v2);
         }
         
-        vector<int> updated_parents(n);
-        for(int k = 0; k < n; k++) {
-            updated_parents[k] = uf.find(k);
-        }
+        // Fix1. UnionFind의 Parent의 경우 최종적으로 Update가 안 되어 있을 수도 있다.
+        // 따라서 parent의 값을 직접 사용하는 것이 아니라 find를 해서 각각의 루트 노드를 구해야 한다.
+        // 그리고 구현적으로도 private으로 구현됬을 parent에 직접 접근하지 않고 find를 통해서 새로운 배열을 생성하는 것이 타당하다.
+        // Fix4. parent를 직접 구하는 것이 아니고 uf로 옮겼다. parents가 어떻게 관리되고 있는지는 uf가 관리해야 할 일이다.
+        vector<int> parents = uf.GetParents();        
         // 각각의 집합의 수를 센다.
-        auto [countA, countB] = GetGroupCount(updated_parents);
-        min_val = min(min_val, abs(countA - countB));
+        vector<int> group_count = GetGroupSizes(parents);
+        min_val = min(min_val, abs(group_count[0] - group_count[1]));
     }
     
     return min_val;
 }
 
-pair<int, int> GetGroupCount(vector<int>& uf_arr) {
+// fix2. pair<int, int>로 반환해도 되지만 범용적으로 작성했다.
+vector<int> GetGroupSizes(const vector<int>& uf_arr) {
     // key : group, value : freq
-    map<int, int> freq;
+    unordered_map<int, int> freq;
     for(int i : uf_arr) {
         freq[i]++;
     }
     
-    vector<int> group_counts;
+    vector<int> group_sizes;
     for(auto [group, count] : freq) {
-        group_counts.push_back(count);
+        group_sizes.push_back(count);
     }
-    return {group_counts[0], group_counts[1]};
+    return group_sizes;
 }
