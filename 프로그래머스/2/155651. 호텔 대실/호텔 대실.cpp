@@ -12,34 +12,34 @@
 // 단속 카메라 : https://school.programmers.co.kr/learn/courses/30/lessons/42884
 // 그러면 이것도 마찮가지로 종료 시간을 기준으로 정렬하고 비교하면 해결할 수 있을 것 같다.
 
+// fix2. 첫번째 구현은 O(n^2) 시간 복잡도였는데 스위핑 알고리즘을 사용하면 O(n)의 시간 복잡도로 해결 가능하다고 한다.
+// 스위핑 알고리즘은 시간축을 따라 이벤트를 순차적으로 처리하는 알고리즘이라고 한다. 구간 겹침, 회의실 문제, 선분 교차 문제 등에서 사용된다고 한다.
+// 스위핑 알고리즘 아이디어 : 시작과 끝을 이벤트로 분리해서 시간 순으로 정렬한다. 그리고 이벤트를 순회하면서 값을 계산한다.
+// 이 문제에서는 start에서는 +1, end에서는 -1을 해서 특정 순간에 사람의 개수를 확인한다.
+
 using namespace std;
 
 // pair first : 시간을 second로 나타낸 시작 시간, pair second : 시간을 second로 나타낸 종료 시간
 vector<pair<int, int>> convert_to_range(const vector<vector<string>>& book_time);
 int convert_string_to_seconds(const string& time);
 
-int solution(vector<vector<string>> book_time) {
+int solution2(vector<vector<string>> book_time) {
     vector<pair<int, int>> book_range = convert_to_range(book_time);
     for(pair<int, int>& range : book_range) {
         range.second += 10;
     }
     sort(book_range.begin(), book_range.end(), [](auto& a, auto& b) {
-        return a.second < b.second;
+        return a.second < b.second; // 종료 시간을 기준으로 정렬
     });
     
-    // for(auto [start, end] : book_range) {
-    //     cout << start << ", " << end << endl;
-    // }
-    // cout << "---" << endl;
+
     int max_overlap = numeric_limits<int>::min();
     for(int i = 0; i < book_range.size(); i++) {
         // overlap의 개수 세기
-        cout << book_range[i].first << ", " << book_range[i].second << endl;
         int overlap = 0;
         for(int j = i + 1; j < book_range.size(); j++) {
             // range start < cur range end
             if(book_range[j].first < book_range[i].second) {
-                // cout << "overlap " << book_range[j].first << ", " << book_range[j].second << endl;
                 overlap++;
             }
         }
@@ -48,6 +48,31 @@ int solution(vector<vector<string>> book_time) {
     }
     
     return max_overlap + 1;
+}
+
+int solution(vector<vector<string>> book_time) {
+    // event = pair : first : time, second : +1 or -1(인원 증감)
+    vector<pair<int, int>> events;
+    for(const vector<string>& book : book_time) {
+        int start = convert_string_to_seconds(book[0]);
+        int end = convert_string_to_seconds(book[1]) + 10;
+        events.emplace_back(start, 1);
+        events.emplace_back(end, -1);
+    }
+    
+    // 시작 시간을 기준으로 정렬하고 시작 시간이 같다면 종료 이벤트를 우선으로 한다.
+    sort(events.begin(), events.end(), [](const auto& a, const auto& b) {
+       return a.first == b.first ? a.second < b.second : a.first < b.first; 
+    });
+    
+    int max_overlap = 0;
+    int cur_overlap = 0;
+    for(const auto& event : events) {
+        cur_overlap += event.second;
+        max_overlap = max(max_overlap, cur_overlap);
+    }
+    
+    return max_overlap;
 }
 
 vector<pair<int, int>> convert_to_range(const vector<vector<string>>& book_time) {
@@ -61,8 +86,7 @@ vector<pair<int, int>> convert_to_range(const vector<vector<string>>& book_time)
     return result;
 }
 
+// hh:mm -> seconds
 int convert_string_to_seconds(const string& time) {
-    string hour = time.substr(0, 2);
-    string min = time.substr(3, 2);
-    return stoi(hour) * 60 + stoi(min);
+    return stoi(time.substr(0, 2)) * 60 + stoi(time.substr(3, 2));
 }
