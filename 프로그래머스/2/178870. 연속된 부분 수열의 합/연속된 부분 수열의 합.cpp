@@ -9,6 +9,11 @@
 // sequence : 배열
 // k : 부분 수열의 합
 
+// while문 경계값 검증 : sum == k일 경우도 start를 증가시켜도 되는가?
+// sum == k일 때 start를 증가시키지 않았다고 가정하자.
+// 다음 루프에서 end가 증가되고 범위가 증가된다. 따라서 항상 sum > k가 성립하게 되고 반드시 start를 증가시켜야 한다.
+// 그러므로 sum == k 인 경우에 미리 start를 증가시켜도 되고 루프는 while(sum >= k)로 처리해도 된다.
+
 using namespace std;
 
 vector<int> solution(vector<int> sequence, int k) {
