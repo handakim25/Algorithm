@@ -19,6 +19,9 @@ using namespace std;
 // 인덱스가 1부터 시작이니까 출력할 때는 인덱스를 맞춰줘야 한다.
 // 회고
 // multiset을 제대로 활용한 적이 없어서 시간이 걸렸다. 자주 사용하지 않은 자료구조에 대해서 정리해야 할 필요가 있다.
+// 회고2
+// while문을 이용해서 start를 줄이는 부분을 모든 조합을 모았을 때 실행해도 된다.
+// 이렇게 하면 while을 필요할 때만 돌게 되므로 더 효율적이다.
 
 int count_type(const vector<string> gems);
 
@@ -49,16 +52,17 @@ vector<int> solution(vector<string> gems) {
         
         // fix4. start는 항상 map에 존재하므로 존재를 미리 확인하지 않아도 된다.
         // while(gem_map.find(gems[start]) != gem_map.end() && gem_map[gems[start]] >= 2) {
-        while(gem_map[gems[start]] >= 2) {
-            gem_map[gems[start]]--;
-            if(gem_map[gems[start]] == 0) {
-                gem_map.erase(gems[start]);
-            }
-            start++;
-        }
 
         // 모든 보석이 모여 있을 경우
         if(gem_map.size() == type_count) {
+            while(gem_map[gems[start]] >= 2) {
+                gem_map[gems[start]]--;
+                if(gem_map[gems[start]] == 0) {
+                    gem_map.erase(gems[start]);
+                }
+                start++;
+            }            
+            
             if(end - start + 1 < min_length) {
                 min_length = end - start + 1;
                 min_start = start;
