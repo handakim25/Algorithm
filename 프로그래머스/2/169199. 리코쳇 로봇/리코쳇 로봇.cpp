@@ -31,12 +31,6 @@ int solution(vector<string> board) {
     
     vector<vector<int>> distances(rows, vector<int>(cols, -1));
     bfs_distance(start, board, distances);
-    for(int row = 0; row < rows; row++) {
-        for(int col = 0; col < cols; col++) {
-            cout << distances[row][col] << ' ';
-        }
-        cout << endl;
-    }
     
     return distances[end.first][end.second];
 }
