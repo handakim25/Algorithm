@@ -17,14 +17,14 @@
 // a, b가 있을 경우 c가 더해지면 (a, c), (b, c), (c, a), (c, b)가 더해진다.
 
 // 팀 파워 차이 계산
-// 0번째 팀 조합의 반대는 n번째 팀 조합
-// 1번째 팀 조합의 반대는 n - 1번째 팀의 조합이다.
+// 0번째 팀 조합의 반대는 n - 1번째 팀 조합
+// 1번째 팀 조합의 반대는 n - 1 -1번째 팀의 조합이다.
 // 이를 이용하면 차이를 계산할 수 있다.
 
 using namespace std;
 
-void permutate_team_list(vector<int>& team, int start, int team_size, vector<vector<int>>& out_team_powers);
-int calculate_team_power(const vector<int>& team, const vector<vector<int>> team_pair_power);
+void permutate_team_list(vector<int>& team, int start, int team_size, vector<vector<int>>& out_team_list);
+int calculate_team_power(const vector<int>& team, const vector<vector<int>>& team_pair_power);
 
 int main() {
     int num = 0;
@@ -62,20 +62,20 @@ int main() {
 
 // start : start 순서부터 팀에 들어간다.
 // pre-condition : start 이전의 팀원들은 이미 고려됨
-void permutate_team_list(vector<int>& team, int start, int team_size, vector<vector<int>>& out_team_powers) {
+void permutate_team_list(vector<int>& team, int start, int team_size, vector<vector<int>>& out_team_list) {
     if(team.size() >= team_size / 2) {
-        out_team_powers.push_back(team);
+        out_team_list.push_back(team);
         return;
     }
 
     for(int i = start; i < team_size; i++) {
         team.push_back(i);
-        permutate_team_list(team, i + 1, team_size, out_team_powers);
+        permutate_team_list(team, i + 1, team_size, out_team_list);
         team.pop_back();
     }
 }
 
-int calculate_team_power(const vector<int>& team, const vector<vector<int>> team_pair_power) {
+int calculate_team_power(const vector<int>& team, const vector<vector<int>>& team_pair_power) {
     int total_power = 0;
     for(int i = 0; i < team.size(); i++) {
         for(int j = 0; j < team.size(); j++) {
