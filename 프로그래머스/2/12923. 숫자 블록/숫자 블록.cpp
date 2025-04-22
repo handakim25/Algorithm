@@ -35,7 +35,7 @@ vector<int> solution(long long begin, long long end) {
         for(long long j = start; i * j <= end; j++) {
             long long prod = i * j;
             if(prod >= begin) {
-                range[prod - begin] = max(range[prod - begin], (int)i);
+                range[prod - begin] = (int)i;
             }
         }
     }
