@@ -40,7 +40,8 @@
 using namespace std;
 
 int find_last_index(const vector<int>& arr);
-int update_array(vector<int>& arr, int capacity, int index);
+// fix3. update_array -> consume_capacity. update_array 함수 이름은 명확하지 않으므로 의도를 나타내도록 수정
+int consume_capacity(vector<int>& arr, int capacity, int index);
 
 long long solution(int cap, int n, vector<int> deliveries, vector<int> pickups) {
     long long result = 0;
@@ -53,8 +54,8 @@ long long solution(int cap, int n, vector<int> deliveries, vector<int> pickups) 
         int farthest = max(deliver_index, pickup_index);
         result += (long long)(farthest + 1) * 2;
         
-        deliver_index = update_array(deliveries, cap, deliver_index);
-        pickup_index = update_array(pickups, cap, pickup_index);
+        deliver_index = consume_capacity(deliveries, cap, deliver_index);
+        pickup_index = consume_capacity(pickups, cap, pickup_index);
     }
     
     return result;
@@ -69,7 +70,7 @@ int find_last_index(const vector<int>& arr) {
     return index;
 }
 
-int update_array(vector<int>& arr, int capacity, int index) {
+int consume_capacity(vector<int>& arr, int capacity, int index) {
     while(capacity > 0 && index >= 0) {
         // arr[index]--;
         // capacity--;
