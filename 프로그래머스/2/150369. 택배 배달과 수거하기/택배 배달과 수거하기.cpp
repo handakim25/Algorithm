@@ -49,12 +49,15 @@ long long solution(int cap, int n, vector<int> deliveries, vector<int> pickups) 
     int pickup_index = find_last_index(pickups);
     
     while(deliver_index >= 0 || pickup_index >= 0) {
-        result += max(deliver_index, pickup_index) + 1;
+        // fix2. 결과값을 명시적으로 표기
+        int farthest = max(deliver_index, pickup_index);
+        result += (long long)(farthest + 1) * 2;
+        
         deliver_index = update_array(deliveries, cap, deliver_index);
         pickup_index = update_array(pickups, cap, pickup_index);
     }
     
-    return result * 2;
+    return result;
 }
 
 int find_last_index(const vector<int>& arr) {
@@ -68,8 +71,13 @@ int find_last_index(const vector<int>& arr) {
 
 int update_array(vector<int>& arr, int capacity, int index) {
     while(capacity > 0 && index >= 0) {
-        arr[index]--;
-        capacity--;
+        // arr[index]--;
+        // capacity--;
+        // fix1. capacity를 한 번에 줄이는 것이 가능하다.
+        int count = min(arr[index], capacity);
+        arr[index] -= count;
+        capacity -= count;
+        
         
         while(index >= 0 && arr[index] == 0) {
             index--;
